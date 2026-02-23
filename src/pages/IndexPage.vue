@@ -1,6 +1,6 @@
 <template>
   <q-page class="">
-    <div class="q-pa-sm row q-gutter-x-sm">
+    <div class="q-pa-sm row q-gutter-x-sm" style="width: max-content">
       <cmpColuna
         v-for="(coluna, index) in colunas"
         :key="coluna.id"
