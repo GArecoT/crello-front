@@ -41,7 +41,6 @@ const props = defineProps({
   id: { type: [String, Number], default: 0 },
 });
 
-
 const emit = defineEmits(["atualizarTitulo"]);
 
 const tituloEditavel = ref(false);

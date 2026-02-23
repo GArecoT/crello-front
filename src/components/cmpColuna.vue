@@ -36,8 +36,11 @@
         item-key="id"
         tag="div"
         :options="{
+          delay: 100,
+          delayOnTouchOnly: true,
           group: 'colunas',
           ghostClass: 'ghost',
+          animation: 150,
         }"
         @end="atualizarCard"
         style="min-height: calc(100vh - 270px); max-height: calc(100vh - 270px)"
