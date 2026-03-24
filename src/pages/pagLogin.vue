@@ -16,7 +16,7 @@
           :label-color="config.corDestaque"
           :rules="rules.campo"
           lazy-rules="ondemand"
-          v-model="login.nome"
+          v-model="login.login"
         />
         <q-input
           outlined
@@ -28,6 +28,8 @@
           lazy-rules="ondemand"
           v-model="login.senha"
         />
+
+        <p class="text-red-5 text-bold text-center">{{ msgErro }}</p>
         <q-btn
           class="full-width q-py-sm"
           style="border-radius: 10px"
@@ -46,17 +48,28 @@ import rules from "src/composables/rules";
 import { useConfigStore } from "src/stores/config/config";
 import { useLoginStore } from "src/stores/login/login";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const store = useLoginStore();
 const storeConfig = useConfigStore();
+
 const config = storeConfig.config;
+const msgErro = ref("");
 
 const login = ref({
-  nome: "",
+  login: "",
   senha: "",
 });
 
 async function fazerLogin() {
-  await store.actLogin(login.value);
+  const res = await store.actLogin(login.value);
+  if (res.info.cdg_erro > 0) msgErro.value = res.info.msg;
+  else {
+    msgErro.value = "";
+    // Redirecionar página
+    await router.push("/");
+  }
 }
 </script>

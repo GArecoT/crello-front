@@ -35,10 +35,14 @@
   </q-layout>
 </template>
 <script setup lang="ts">
+import { SessionStorage } from "quasar";
 import { useConfigStore } from "src/stores/config/config";
 import { useContextoStore } from "src/stores/contexto/contexto";
 import { useQuadrosStore } from "src/stores/quadros/quadros";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const contextoStore = useContextoStore();
 const configStore = useConfigStore();
@@ -55,7 +59,8 @@ function atualizarQuadro(codigo: number) {
   console.log("mudou quadro", codigo);
 }
 
-onMounted(() => {
+onMounted(async () => {
+  if (!SessionStorage.hasItem("chave")) await router.push("/login");
   pegaQuadros();
 });
 </script>
