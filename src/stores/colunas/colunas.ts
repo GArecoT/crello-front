@@ -16,12 +16,12 @@ export const useColunasStore = defineStore("colunas", {
       try {
         const res = await api.get(`${api.defaults.baseURL}colunas`)
         const data = res.data as Response
-        if (!(data.info.cdg_erro > 0) && data.data.chave && data.data.chave.length > 0) {
+        if (!(data.info.cdg_erro > 0)) {
           this.colunas = data.data
         }
         return data
       } catch (error) {
-        const erro = handleErrorServidor(error)
+        const erro = handleErrorServidor(error, true)
         return erro
       }
     },
