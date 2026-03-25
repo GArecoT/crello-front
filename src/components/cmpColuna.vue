@@ -4,6 +4,7 @@
     class="q-pa-sm rounded-borders col"
     style="
       max-width: 300px;
+      width: 300px;
       min-height: calc(100vh - 150px);
       max-height: calc(100vh - 150px);
     "
@@ -31,7 +32,7 @@
     </div>
     <div style="overflow: auto">
       <Sortable
-        :id="`coluna_${props.id}`"
+        :id="props.id"
         :list="props.lista"
         item-key="id"
         tag="div"
@@ -48,10 +49,9 @@
         <template #item="{ element, index }">
           <cmpCard
             ref="refCard"
-            :titulo="element.titulo"
-            :id="element.id"
+            :card="element"
             @atualizar-titulo="
-              (val) => emit('atualizarCard', { index: index, titulo: val })
+              (val) => emit('atualizarCard', { index: index, nome: val })
             "
           />
         </template>
@@ -62,23 +62,25 @@
 <script setup lang="ts">
 import { useConfigStore } from "src/stores/config/config";
 import cmpCard from "./cmpCard.vue";
-import type { Lista } from "src/composables/tipos";
+import type { Cardslista } from "src/composables/tipos";
 import { Sortable } from "sortablejs-vue3";
 import { ref } from "vue";
+import { useCardsStore } from "src/stores/cards/cards";
 
+const storeCard = useCardsStore();
 const storeConfig = useConfigStore();
 const config = storeConfig.config;
 
 interface Props {
   id?: string | number;
   titulo?: string;
-  lista?: Lista;
+  lista?: Cardslista;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   id: 0,
   titulo: "Título",
-  lista: () => [{ id: 1, titulo: "Titulo card", id_coluna: 0 }],
+  lista: () => [{ id: 1, nome: "Titulo card", id_coluna: 0, usuarios: [], categorias: [] }],
 });
 
 const emit = defineEmits(["atualizarCard"]);
@@ -89,11 +91,11 @@ const refCard = ref({
   },
 });
 
-function atualizarCard(evt: {
+async function atualizarCard(evt: {
   item: { id: string | number };
   to: { id: string | number };
 }) {
-  console.log("aaa", evt.item.id, evt.to.id);
+  await storeCard.actMoverColuna(evt.item.id as number, evt.to.id as number);
 }
 </script>
 <style lang="scss">
