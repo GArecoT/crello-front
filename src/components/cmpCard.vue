@@ -2,7 +2,7 @@
   <q-card
     flat
     class="full-width q-pa-xs q-my-sm cursor-grab card non-selectable"
-    :id="`card_${props.id}`"
+    :id="props.card.id"
   >
     <div class="row items-start">
       <q-input
@@ -15,7 +15,7 @@
         :outlined="tituloEditavel"
         input-class="text-bold cursor-pointer"
         input-style="height: 20px; max-height: 2.5rem"
-        :model-value="props.titulo"
+        :model-value="props.card.nome"
         ref="inputTitulo"
         @click="ativarEdicao"
         @blur="salvarEdicao"
@@ -23,23 +23,31 @@
         @update:model-value="(val) => (tituloTemporario = val)"
       />
     </div>
+    <div class="q-gutter-x-xs q-gutter-y-xs">
+      <q-badge :key="usuario.id" v-for="usuario in card.usuarios">{{
+        usuario.nome
+      }}</q-badge>
+    </div>
+    <div class="q-gutter-x-xs q-gutter-y-xs">
+      <q-badge :key="categoria" v-for="categoria in card.categorias">{{
+        categoria
+      }}</q-badge>
+    </div>
   </q-card>
 </template>
 <script setup lang="ts">
+import { useCardsStore } from "src/stores/cards/cards";
 import { useConfigStore } from "src/stores/config/config";
 import { ref } from "vue";
 import type { Ref } from "vue";
+import type { Card } from "src/composables/tipos";
 
+const storeCards = useCardsStore();
 const storeConfig = useConfigStore();
+
 const config = storeConfig.config;
-const props = defineProps({
-  titulo: {
-    type: String,
-    default:
-      "Teste de título gigante da pega rapaz ratinhooo Teste de título gigante da pega rapaz ratinhooo",
-  },
-  id: { type: [String, Number], default: 0 },
-});
+
+const props = defineProps<{ card: Card }>();
 
 const emit = defineEmits(["atualizarTitulo"]);
 
@@ -49,14 +57,19 @@ const tituloTemporario: Ref<string | number | null> = ref("");
 
 function ativarEdicao() {
   tituloEditavel.value = true;
-  tituloTemporario.value = props.titulo;
+  tituloTemporario.value = props.card.nome;
   inputTitulo.value.select();
 }
-function salvarEdicao() {
+async function salvarEdicao() {
   if (tituloEditavel.value) {
     tituloEditavel.value = false;
-    emit("atualizarTitulo", tituloTemporario.value);
     inputTitulo.value.blur();
+    const res = await storeCards.actRenomear(
+      props.card.id as number,
+      tituloTemporario.value as string,
+    );
+    if (!(res.info.cdg_erro > 0))
+      emit("atualizarTitulo", tituloTemporario.value);
   }
 }
 </script>
