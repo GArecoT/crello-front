@@ -1,10 +1,15 @@
 export type ObjetoArrayGenerico = { [key: string | number]: any }
 
-export type Card = { id: number | string, titulo: string, id_coluna: string | number }
+export type Usuario = { id: number, nome: string, admin: number, senha?: string }
 
-export type Lista = Card[]
+export type Card = {
+  id: number | string, nome: string, id_coluna: string | number,
+  usuarios: Usuario[], categorias: string[]
+}
 
-export type Coluna = { id: number | string, titulo_coluna: string, cards: Lista }[]
+export type Cardslista = Card[]
+
+export type Coluna = { id: number | string, nome: string, ordem: number, cards: Cardslista }[]
 
 export type Response = { data: ObjetoArrayGenerico, info: ServidorInfo }
 
