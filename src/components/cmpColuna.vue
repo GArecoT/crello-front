@@ -35,6 +35,7 @@
         :id="props.id"
         :list="props.lista"
         item-key="id"
+        :key="`${JSON.stringify(props.lista)}${key}`"
         tag="div"
         :options="{
           delay: 100,
@@ -43,6 +44,7 @@
           ghostClass: 'ghost',
           animation: 150,
         }"
+        @start="storeColuna.bloqueioAtualizar = true"
         @end="atualizarCard"
         style="min-height: calc(100vh - 270px); max-height: calc(100vh - 270px)"
       >
@@ -51,7 +53,11 @@
             ref="refCard"
             :card="element"
             @atualizar-titulo="
-              (val) => emit('atualizarCard', { index: index, nome: val })
+              async (val) => {
+                emit('atualizarCard', { index: index, nome: val });
+                key = Date.now()
+                await storeColuna.actAtualizar(500);
+              }
             "
           />
         </template>
@@ -66,10 +72,14 @@ import type { Cardslista } from "src/composables/tipos";
 import { Sortable } from "sortablejs-vue3";
 import { ref } from "vue";
 import { useCardsStore } from "src/stores/cards/cards";
+import { useColunasStore } from "src/stores/colunas/colunas";
 
+const storeColuna = useColunasStore();
 const storeCard = useCardsStore();
 const storeConfig = useConfigStore();
 const config = storeConfig.config;
+
+const key = ref(1)
 
 interface Props {
   id?: string | number;
@@ -80,7 +90,9 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   id: 0,
   titulo: "Título",
-  lista: () => [{ id: 1, nome: "Titulo card", id_coluna: 0, usuarios: [], categorias: [] }],
+  lista: () => [
+    { id: 1, nome: "Titulo card", id_coluna: 0, usuarios: [], categorias: [] },
+  ],
 });
 
 const emit = defineEmits(["atualizarCard"]);
@@ -96,6 +108,8 @@ async function atualizarCard(evt: {
   to: { id: string | number };
 }) {
   await storeCard.actMoverColuna(evt.item.id as number, evt.to.id as number);
+  storeColuna.bloqueioAtualizar = false;
+  await storeColuna.actAtualizar(5000);
 }
 </script>
 <style lang="scss">

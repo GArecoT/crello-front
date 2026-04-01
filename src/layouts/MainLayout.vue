@@ -63,4 +63,6 @@ onMounted(async () => {
   if (!SessionStorage.hasItem("chave")) await router.push("/login");
   pegaQuadros();
 });
+
+
 </script>

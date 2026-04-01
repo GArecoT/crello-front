@@ -9,7 +9,9 @@ export type Card = {
 
 export type Cardslista = Card[]
 
-export type Coluna = { id: number | string, nome: string, ordem: number, cards: Cardslista }[]
+export type Coluna = { id: number | string, nome: string, ordem: number, cards: Cardslista }
+
+export type Colunas = Coluna[]
 
 export type Response = { data: ObjetoArrayGenerico, info: ServidorInfo }
 

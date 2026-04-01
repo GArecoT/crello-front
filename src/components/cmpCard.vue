@@ -41,7 +41,9 @@ import { useConfigStore } from "src/stores/config/config";
 import { ref } from "vue";
 import type { Ref } from "vue";
 import type { Card } from "src/composables/tipos";
+import { useColunasStore } from "src/stores/colunas/colunas";
 
+const storeColuna = useColunasStore()
 const storeCards = useCardsStore();
 const storeConfig = useConfigStore();
 
@@ -56,11 +58,13 @@ const inputTitulo = ref({ select: () => {}, focus: () => {}, blur: () => {} });
 const tituloTemporario: Ref<string | number | null> = ref("");
 
 function ativarEdicao() {
+  storeColuna.bloqueioAtualizar = true
   tituloEditavel.value = true;
   tituloTemporario.value = props.card.nome;
   inputTitulo.value.select();
 }
 async function salvarEdicao() {
+  storeColuna.bloqueioAtualizar = false
   if (tituloEditavel.value) {
     tituloEditavel.value = false;
     inputTitulo.value.blur();
@@ -81,7 +85,7 @@ async function salvarEdicao() {
   cursor: grabbing;
 }
 .card:hover {
-  backgroud-color: yellow !important;
+  // background-color:  !important;
   border: 2px solid $primary;
 }
 </style>
